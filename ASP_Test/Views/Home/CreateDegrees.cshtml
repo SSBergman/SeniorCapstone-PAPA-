@@ -1,0 +1,17 @@
+﻿@model ASP_Test.Models.DegreeForm
+@{
+    Layout = "LayoutAdmin";
+
+}
+<h2>If returned to this page when trying to submit, the year syntax is wrong. It should be a four digit number</h2>
+    <form method="post" action="CreateDegree">
+    <div class="mb-3">
+        @Html.TextBoxFor(d=>d.DegreeName,new {@class="form-control", @maxlength="50"})
+        @Html.TextBoxFor(d=>d.VersionYear,new {@class="form-control", @maxlength="4",@minlength="4"})
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("AdminDegree", "Home")'">Back To Degree Editor</button>
+
+

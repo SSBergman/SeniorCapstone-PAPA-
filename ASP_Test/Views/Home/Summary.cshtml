@@ -1,0 +1,32 @@
+﻿@model ASP_Test.Models.SummaryModel
+@{
+    Layout = "LayoutStudent";
+
+}
+<h5>This is a summary of your created plan.</h5>
+<h6>To share this with an advisor, save or screenshot the page</h6>
+@{
+    int index = 0;
+    foreach(var line in Model.result)
+    {
+        switch(Model.format[index])
+        {
+            //Degree
+            case 1:
+                <h3>@line</h3>
+                break;
+            //Semester
+            case 2:
+                <h4>@line</h4>
+                break;
+            //Class
+            case 3:
+                <h5>@line</h5>
+                break;
+            default:
+                <p>@line</p>
+                break;
+        }
+        index++;
+    }
+}

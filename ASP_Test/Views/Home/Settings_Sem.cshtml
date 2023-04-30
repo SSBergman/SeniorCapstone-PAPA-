@@ -1,0 +1,46 @@
+﻿@model ASP_Test.Models.SettingsModel
+@{
+    Layout = "LayoutDefault";
+
+}
+<form method="post" action="Add">
+@*    <div class="mb-3">
+        <label for="" class="form-label">StudentId</label>
+        <input type="string" class="form-control" asp-for="StudentId" />
+
+        <label for="" class="form-label">Email</label>
+        <input type="email" class="form-control" asp-for="Email" maxlength="5"/>
+
+
+        <label for="" class="form-label">Password</label>
+        <input type="password" class="form-control" asp-for="StudentPassword" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+*@
+    <h6>NOTE: Submitting will update both degree and graduation year. Leave respective dropdown on default value to keep as is.</h6>
+    <p>Current Degree is: @Model.CurrentDegree</p>
+    <select name="degree" class="form-control">
+        <option value="">Select a degree (default)</option>
+        @{
+            foreach(var deg in Model.Degrees)
+            {
+                <option value=@deg.DegreeId>@deg.VersionYear @deg.DegreeName</option>
+            }
+        }
+
+    </select>
+
+    <p>Current graduation year is: @Model.GradYear</p>
+    <select name="GradYear" class="form-control">
+        <option value="">Select a year (default)</option>
+        @{
+            foreach (var year in Model.Years)
+            {
+                        <option value=@year>@year</option>
+            }
+        }
+
+    </select>
+
+</form>

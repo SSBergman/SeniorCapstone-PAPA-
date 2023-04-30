@@ -1,0 +1,62 @@
+﻿@model ASP_Test.Models.ChecklistModel
+@{
+    ViewData["Title"] = "Checklist";
+    Layout = "LayoutStudent";
+}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist</title>
+    <link rel="stylesheet" href="StyleSheet1.css">
+</head>
+<table class="table">
+    <thead>
+        <tr>
+            <th>SID</th>
+            <th>CID </th>
+            <th>Category</th>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Status Bit</th>
+
+        </tr>
+
+    <tbody>
+            @{
+                foreach (var course in Model.Classes)
+                {
+                <tr>
+                    <td>@course.StudentId</td>
+                    <td>@course.ClassId </td>
+                    <td>@course.Category </td>
+                    <td>@course.CourseCode </td>
+                    <td>@course.ClassName </td>
+                    <td>@course.Status </td>
+                    <td>@course.StatusBit</td>
+                    <td>
+                        @{
+                                   
+                            if(course.StatusBit==true)
+                            {
+                                //<button type="button" class="btn btn-success btn-outline-dark btn-lg" onclick="location.href='@Url.ActionLink("IncompleteClass", "Home",new{SID=course.StudentId,CID=@course.ClassId})'"> </button>
+                                <input type="checkbox" style="color:green;" onclick="location.href='@Url.ActionLink("IncompleteClass", "Home",new{SID=course.StudentId,CID=@course.ClassId})'" checked />
+
+                            }
+
+                            else
+                            {
+                                //<button type="button" class="btn btn-secondary btn-outline-dark btn-lg" onclick="location.href='@Url.ActionLink("CompleteClass", "Home",new{SID=course.StudentId,CID=@course.ClassId})'"> </button>
+                                <input type="checkbox" onclick="location.href='@Url.ActionLink("CompleteClass", "Home",new{SID=course.StudentId,CID=@course.ClassId})'"  />
+
+                            }
+                        }
+
+                        </td>
+                    </tr>
+                }
+            }
+
+    </tbody>
+
+</table>

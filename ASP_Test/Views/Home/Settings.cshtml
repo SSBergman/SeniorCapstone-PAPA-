@@ -1,0 +1,80 @@
+﻿@model ASP_Test.Models.SettingsModel
+@{
+    Layout = "LayoutStudent";
+
+}
+<head>
+    <style>
+        .myDiv {
+            padding-right: ($spacer * .5) !important;
+        }
+    </style>
+ 
+
+</head>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 gx-5">
+            <p>Current Degree is: @Model.CurrentDegree</p>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Version Year</th>
+                        <th>Degree</th>
+                        <th></th>
+                    </tr>
+                <tbody>
+                        @{
+                            foreach (var deg in Model.Degrees)
+                            {
+                            <tr>
+                                <td>@deg.VersionYear</td>
+                                <td>@deg.DegreeName</td>
+                                <td>
+                                    @{
+                                        if ((deg.VersionYear+" "+deg.DegreeName).CompareTo(Model.CurrentDegree) != 0)
+                                        {
+                                            <button type="button" class="btn btn-primary" onclick="location.href='@Url.ActionLink("UpdateDegree", "Home",new{DID=deg.DegreeId})'">Change Degree</button>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        }
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-4">
+            <p>Current graduation year is: @Model.GradYear</p>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th></th>
+                    </tr>
+                <tbody>
+                        @{
+                            foreach (var yr in Model.Years)
+                            {
+                            <tr>
+                                <td>@yr</td>
+                                <td>
+                                        @{
+                                            if (yr.CompareTo(Model.GradYear) != 0)
+                                            {
+                                            <button type="button" class="btn btn-primary" onclick="location.href='@Url.ActionLink("UpdateGradYear", "Home",new{Year=yr})'">Change Graduation Year</button>
+                                            }
+                                        }
+                                </td>
+                            </tr>
+                            }
+                        }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

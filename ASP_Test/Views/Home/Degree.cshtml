@@ -1,0 +1,205 @@
+﻿@model ASP_Test.Models.SemPlanner
+@{
+    ViewData["Title"] = "Degree";
+    Layout = "LayoutStudent";
+    
+}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Degree Planner</title>
+    <link rel="stylesheet" href="StyleSheet1.css">
+    <style>
+    thead{
+        position: sticky;
+    }
+    </style>
+    <style>
+    .scroll-div {
+       
+        height:300px;
+        overflow:hidden;
+        overflow-y: scroll;
+            
+    }
+    </style>
+</head>
+
+<body>
+@*    @{
+        if (Model is null)
+        {
+            <p>true</p>
+        }
+        else
+        {
+            <p>false</p>
+        }
+        if(Model.Classes is null)
+        {
+            <p>true</p>
+        }
+        else
+        {
+            <p>false</p>
+        }
+        if (Model.Semesters is null)
+        {
+            <p>true</p>
+        }
+        else
+        {
+            <p>false</p>
+        }
+        if (Model.Classes is null)
+        {
+            <p>true</p>
+        }
+        else
+        {
+            <p>false @Model.index</p>
+        }
+    }
+*@
+    <div class="container card border-dark">
+    <div class="row">
+            <div class="col-3 bg-danger" style=" border-radius: 15px 50px 30px;">
+                <h4 class="text-white" style="padding-top:20em padding-bottom:20em;">Requirements</h4>
+                @{
+                    if (Model.Requirements.Count != 0)
+                    {
+                        <h5 class="text-white">@Model.Requirements[0].DegreeName</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="bg-white">Course Code</th>
+                                    <th class="bg-white">Complete</th>
+                                </tr>
+                            <tbody>
+                                    @{
+                                        foreach (var req in Model.Requirements)
+                                        {
+                                        <tr>
+                                            <td class="bg-white">@req.CourseCode</td>
+                                            @{
+                                                if(@req.Complete.CompareTo("Y")==0)
+                                                {
+                                                    <td class="text-white bg-success">@req.Complete</td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="text-white bg-danger">@req.Complete</td>
+                                                }
+                                            }
+                                        </tr>
+                                        }
+                                    }
+
+                            </tbody>
+                        </table>
+                    }
+                  }
+        </div>
+        <div class="col-lg">
+            <div class="row">
+                <div class="col-lg">
+                <h6>Classes</h6>
+                <div class="card shadow p-3 mb-5 bg-white rounded">
+                           
+                               
+                                    
+                           <div class="scroll-div">
+                           
+                          
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Prerequisites</th>
+                                <th>Spring</th>
+                                <th>Summer</th>
+                                <th>Fall</th>
+                                <th>Add Class</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                                @{
+                                    foreach (var course in Model.Classes)
+                                    {
+                                    <tr> 
+                                      
+                                        <td>@course.CourseCode </td>
+                                        <td>@course.ClassName </td>
+                                        <td>@course.Prerequisites</td>
+                                        <td>@course.Spring </td>
+                                        <td>@course.Summer </td>
+                                        <td>@course.Fall </td>
+                                        <td>
+                                        @{
+                                   
+                                            if(course.Available[Model.index%3].CompareTo('1')==0)
+                                            {
+                                                <button type="button" class="btn btn-danger" onclick="location.href='@Url.ActionLink("ListClass", "Home",new{SID=Model.Semesters.SemesterId,CID=@course.ClassId})'">Add Class</button>
+                                            }
+                                        }
+
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                
+                        </tbody>
+
+                    </table>
+                            </div>
+                                     </div>
+                            </div>
+                </div>
+     
+            <div class="row">
+                <div class="col-lg">
+                    <h1>@Model.Semesters.Season @Model.Semesters.SemYear, @Model.index, @Model.count</h1>
+                    @{
+                        if (Model.index != 0)
+                        {
+                            <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("PrevSem", "Home")'">Previous Semester</button>
+                        }
+                        if (Model.index != (Model.count - 1))
+                        {
+                            <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("NextSem", "Home")'">Next Semester</button>
+                        }
+                    }
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Name</th>
+                                <th>Prerequisites</th>
+                            </tr>
+                        <tbody>
+                                @{
+                                    foreach (var scheduled in Model.Listed)
+                                    {
+                                    <tr>
+                                        <td>@scheduled.CourseCode</td>
+                                        <td>@scheduled.ClassName</td>
+                                        <td>@scheduled.Prerequisites</td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" onclick="location.href='@Url.ActionLink("UnlistClass", "Home",new{LID=@scheduled.ListId})'">Drop Class</button>
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+
+</body>

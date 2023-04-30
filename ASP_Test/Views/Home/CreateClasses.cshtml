@@ -1,0 +1,32 @@
+﻿@model ASP_Test.Models.ClassForm
+@{
+    Layout = "LayoutAdmin";
+
+}
+<h2>If returned to this page when trying to submit, the year syntax is wrong. It should be a four digit number</h2>
+    <form method="post" action="CreateClass">
+    <div class="mb-3">
+        <p>Name of class</p>
+        @Html.TextBoxFor(c=>c.ClassName,new {@class="form-control", @maxlength="50"})
+        <p>Course Code</p>
+        @Html.TextBoxFor(c=>c.CourseCode,new {@class="form-control", @maxlength="6"})
+        <p>Category (i.e. CSC, MTH, COR, etc.)</p>
+        @Html.TextBoxFor(c=>c.Category,new {@class="form-control", @maxlength="4"})
+        <p>Prerequisites classes in the form of a list separated by commas "CSC360, CSC340. Leave Blank if none"</p>
+        @Html.TextBoxFor(c=>c.Prerequisites,new {@class="form-control", @maxlength="30"})
+        <p>Offered in Fall</p>
+        @Html.CheckBoxFor(c=>c.InFall)
+        <p>Offered in Spring</p>
+        @Html.CheckBoxFor(c=>c.InSpring)
+        <p>Offered in Summer</p>
+        @Html.CheckBoxFor(c=>c.InSummer)
+        <p>Still offered in current semesters (this determines if a student will have to mark it complete from a past semester or if they can still put it in their plan</p>
+        @Html.CheckBoxFor(c=>c.IsOffered)
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("AdminClass", "Home")'">Back To Class Editor</button>
+
+

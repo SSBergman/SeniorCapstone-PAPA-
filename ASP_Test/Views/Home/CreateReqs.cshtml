@@ -1,0 +1,78 @@
+﻿@model ASP_Test.Models.AdminReqModel
+@{
+    Layout = "LayoutAdmin";
+
+}
+<h2>Editing Requirements for: @Model.DegreeName @Model.VersionYear</h2>
+<button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("AdminDegree", "Home")'">Continue To Degree Editor</button>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3>Classes</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Code </th>
+            <th>Name </th>
+            <th>Add Class</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var course in Model.Classes)
+            {
+                <tr>
+                    
+                    <td>@course.CourseCode </td>
+                    <td>@course.ClassName </td>
+                    <td>
+
+                        @{
+                            if (course.RequiredBit.CompareTo("N") == 0)
+                            {
+                                <button type="button" class="btn btn-danger" onclick="location.href='@Url.ActionLink("AddReq", "Home",new{DID=Model.DegreeId,CID=@course.ClassId})'">Add Class</button>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        }
+
+    </tbody>
+
+</table>
+        </div>
+        <div class="col">
+            <h3>Requirements</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Code </th>
+            <th>Name </th>
+            <th>Remove Class</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var course in Model.Classes)
+            {
+                    if (course.RequiredBit.CompareTo("Y") == 0)
+                    {
+                        <tr>
+
+                            <td>@course.CourseCode </td>
+                            <td>@course.ClassName </td>
+                            <td><button type="button" class="btn btn-danger" onclick="location.href='@Url.ActionLink("RemoveReq", "Home",new{DID=Model.DegreeId,CID=@course.ClassId})'">Remove Class</button></td>
+                        </tr>
+                    }
+            }
+        }
+
+    </tbody>
+
+</table>
+</div>
+    </div>
+</div>
+
+

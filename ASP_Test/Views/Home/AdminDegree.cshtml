@@ -1,0 +1,40 @@
+﻿@model ASP_Test.Models.AdminDegreeModel
+@{
+    ViewData["Title"] = "Degree Editor";
+    Layout = "LayoutAdmin";
+    
+}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Degree Editor</title>
+    <link rel="stylesheet" href="StyleSheet1.css">
+</head>
+
+<body>
+    <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("CreateDegree", "Home")'">New Degree</button>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Degree Name</th>
+                <th>Version Year</th>
+                <th></th>
+            </tr>
+        <tbody>
+                @{
+                    foreach (var Deg in Model.Degrees)
+                    {
+                    <tr>
+                        <td>@Deg.DegreeName</td>
+                        <td>@Deg.VersionYear</td>
+                        <td>
+                        <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("EditDegree", "Home",new{DID=Deg.DegreeId})'">Edit Degree</button>
+                        </td>
+                    </tr>
+                    }
+                }
+
+        </tbody>
+    </table>
+</body>

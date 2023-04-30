@@ -1,0 +1,50 @@
+﻿@model ASP_Test.Models.AdminClassModel
+@{
+    ViewData["Title"] = "Class Editor";
+    Layout = "LayoutAdmin";
+    
+}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Editor</title>
+    <link rel="stylesheet" href="StyleSheet1.css">
+</head>
+
+<body>
+    <h1>Class Editor</h1>
+    <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("CreateClass", "Home")'">New Class</button>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Course Code</th>
+                <th>Category</th>
+                <th>Name</th>
+                <th>Prerequisites</th>
+                <th>Is Offered</th>
+                <th>In Fall</th>
+                <th>In Spring</th>
+                <th>In Summer</th>
+                <th></th>
+            </tr>
+        <tbody>
+                @{
+                    foreach (var Cla in Model.Classes)
+                    {
+                    <tr>
+                        <td>@Cla.CourseCode</td>
+                        <td>@Cla.Category</td>
+                        <td>@Cla.ClassName</td>
+                        <td>@Cla.Prerequisites</td>
+                        <td>@Cla.IsOffered</td>
+                        <td>@Cla.InFall</td>
+                        <td>@Cla.InSpring</td>
+                        <td>@Cla.InSummer</td>
+                        <td><button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("EditClass", "Home",new{CID=Cla.ClassId})'">Edit Class</button></td>
+                    </tr>
+                    }
+                }
+
+        </tbody>
+    </table>
+</body>

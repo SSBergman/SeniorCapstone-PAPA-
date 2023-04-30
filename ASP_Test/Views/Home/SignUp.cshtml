@@ -1,0 +1,24 @@
+﻿@model ASP_Test.Models.addStudentview
+@{
+    Layout = "LayoutDefault";
+}
+<h3>Sign Up</h3>
+<form method="post" action="SignUp">
+    <div class="mb-3" style="text-align:center;">
+@*      <label for="" class="form-label">StudentId</label>
+        <input type="string" class="form-control" asp-for="StudentId" />*@
+
+        <label for="" class="form-label">Username</label>
+        <input type="text" placeholder="Enter Username" class="form-control" asp-for="Email" maxlength="30" />
+
+
+        <label for="" class="form-label">Password</label>
+        <input type="password" placeholder="Password" class="form-control" asp-for="StudentPassword" />
+    </div>
+    <div style="text-align:center;">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+<div style="text-align:right; padding-right: 5%;">
+<button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("LogIn", "Home")'">Back To Log In</button>
+</div>
