@@ -12,13 +12,12 @@
 <table class="table">
     <thead>
         <tr>
-            <th>SID</th>
-            <th>CID </th>
+           
             <th>Category</th>
             <th>Code</th>
             <th>Name</th>
             <th>Status</th>
-            <th>Status Bit</th>
+            
 
         </tr>
 
@@ -27,13 +26,12 @@
                 foreach (var course in Model.Classes)
                 {
                 <tr>
-                    <td>@course.StudentId</td>
-                    <td>@course.ClassId </td>
+                   
                     <td>@course.Category </td>
                     <td>@course.CourseCode </td>
                     <td>@course.ClassName </td>
                     <td>@course.Status </td>
-                    <td>@course.StatusBit</td>
+                   
                     <td>
                         @{
                                    
