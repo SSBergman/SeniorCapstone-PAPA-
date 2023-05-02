@@ -2,7 +2,7 @@
 @{
     Layout = "LayoutDefault";
 }
-<h3>Sign Up</h3>
+<h3 style="text-align:center;">Sign Up</h3>
 <form method="post" action="SignUp">
     <div class="mb-3" style="text-align:center;">
 @*      <label for="" class="form-label">StudentId</label>
@@ -16,9 +16,10 @@
         <input type="password" placeholder="Password" class="form-control" asp-for="StudentPassword" />
     </div>
     <div style="text-align:center;">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-danger">Submit</button>
     </div>
 </form>
-<div style="text-align:right; padding-right: 5%;">
-<button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("LogIn", "Home")'">Back To Log In</button>
+<hr />
+<div style="text-align:center;">
+<button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("LogIn", "Home")'">Back To Log In</button>
 </div>

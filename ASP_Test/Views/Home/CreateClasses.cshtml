@@ -3,30 +3,31 @@
     Layout = "LayoutAdmin";
 
 }
-<h2>If returned to this page when trying to submit, the year syntax is wrong. It should be a four digit number</h2>
+<h7>Note:If returned to this page when trying to submit, the year syntax is wrong. It should be a four digit number</h7>
+
     <form method="post" action="CreateClass">
     <div class="mb-3">
-        <p>Name of class</p>
+        <h4>Name of class</h4>
         @Html.TextBoxFor(c=>c.ClassName,new {@class="form-control", @maxlength="50"})
-        <p>Course Code</p>
+        <h4>Course Code</h4>
         @Html.TextBoxFor(c=>c.CourseCode,new {@class="form-control", @maxlength="6"})
-        <p>Category (i.e. CSC, MTH, COR, etc.)</p>
+        <h4>Category (i.e. CSC, MTH, COR, etc.)</h4>
         @Html.TextBoxFor(c=>c.Category,new {@class="form-control", @maxlength="4"})
-        <p>Prerequisites classes in the form of a list separated by commas "CSC360, CSC340. Leave Blank if none"</p>
+        <h4>Prerequisites classes in the form of a list separated by commas "CSC360, CSC340. Leave Blank if none"</h4>
         @Html.TextBoxFor(c=>c.Prerequisites,new {@class="form-control", @maxlength="30"})
-        <p>Offered in Fall</p>
+        <h6>Offered in Fall</h6>
         @Html.CheckBoxFor(c=>c.InFall)
-        <p>Offered in Spring</p>
+        <h6>Offered in Spring</h6>
         @Html.CheckBoxFor(c=>c.InSpring)
-        <p>Offered in Summer</p>
+        <h6>Offered in Summer</h6>
         @Html.CheckBoxFor(c=>c.InSummer)
-        <p>Still offered in current semesters (this determines if a student will have to mark it complete from a past semester or if they can still put it in their plan</p>
+        <h6>Still offered in current semesters (this determines if a student will have to mark it complete from a past semester or if they can still put it in their plan</h6>
         @Html.CheckBoxFor(c=>c.IsOffered)
 
     </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-danger">Submit</button>
 </form>
-<button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("AdminClass", "Home")'">Back To Class Editor</button>
+<button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("AdminClass", "Home")'">Back To Class Editor</button>
 
 

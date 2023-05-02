@@ -13,7 +13,7 @@
 
 <body>
     <h1>Class Editor</h1>
-    <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("CreateClass", "Home")'">New Class</button>
+    <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("CreateClass", "Home")'">New Class</button>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -22,9 +22,9 @@
                 <th>Name</th>
                 <th>Prerequisites</th>
                 <th>Is Offered</th>
-                <th>In Fall</th>
-                <th>In Spring</th>
-                <th>In Summer</th>
+                <th>Fall</th>
+                <th>Spring</th>
+                <th>Summer</th>
                 <th></th>
             </tr>
         <tbody>
@@ -40,7 +40,7 @@
                         <td>@Cla.InFall</td>
                         <td>@Cla.InSpring</td>
                         <td>@Cla.InSummer</td>
-                        <td><button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("EditClass", "Home",new{CID=Cla.ClassId})'">Edit Class</button></td>
+                        <td><button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("EditClass", "Home",new{CID=Cla.ClassId})'">Edit Class</button></td>
                     </tr>
                     }
                 }
