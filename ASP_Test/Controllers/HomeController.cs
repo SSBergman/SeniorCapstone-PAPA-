@@ -347,7 +347,7 @@ namespace ASP_Test.Controllers
             System.FormattableString cmd = $"exec dbo.UpdateGrad {UID},{Year}";
             PAPACONTEXT.Database.ExecuteSql(cmd);
             HttpContext.Session.SetInt32("Count", (await PAPACONTEXT.SemCount.Where(s => s.StudentId == UID).ToListAsync())[0].Semesters);
-            HttpContext.Session.SetInt32("index", 0);
+            HttpContext.Session.SetInt32("Index", 0);
             return RedirectToAction("Settings");
         }
         [HttpGet]
