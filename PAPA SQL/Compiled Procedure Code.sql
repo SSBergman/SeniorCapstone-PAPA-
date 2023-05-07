@@ -1,3 +1,5 @@
+use PAPA_DB1
+go
 --Sections
 --1.Creating entries with unique IDs
 --2.Creating items
@@ -5,32 +7,45 @@
 --4.Deleting items
 --5.Viewing database
 
---1
+
+
+	--1.Unique
+
+
 --Creating new entries in database with Unique IDs
 --Degree
 create procedure dbo.NewDegree
-	@Name varchar(50)
+	@Name varchar(50),
+	@year char(4)
 as
-insert into dbo.Degree(Degree_ID,Degree_Name) values('NEW',@Name)
-update Degree 
-set Degree_ID=concat('D',ID_Num)
-where Degree_ID='NEW'
+if((select count(*) from dbo.Degree where Degree_Name=@Name and Version_Year=@year)=0)
+begin
+	insert into dbo.Degree(Degree_ID,Degree_Name,Version_Year) values('NEW',@Name,@year)
+	update Degree 
+	set Degree_ID=concat('D',ID_Num)
+	where Degree_ID='NEW'
+end
 go
+
+
 --Class
 create procedure dbo.NewClass
-	@Code varchar(6),
+	@Code varchar(7),
 	@Name varchar(50),
 	@Category varchar(4),
+	@Prereq varchar(30),
 	@Fall bit,
 	@Spring bit,
 	@Summer bit,
 	@Offered bit
 as
-insert into dbo.Class(Class_ID,Course_Code,Class_Name,Category,InFall,InSpring,InSummer,IsOffered) values('NEW',@Code,@Name,@Category,@Fall,@Spring,@Summer,@Offered)
+insert into dbo.Class(Class_ID,Course_Code,Class_Name,Category,Prerequisites,InFall,InSpring,InSummer,IsOffered) values('NEW',@Code,@Name,@Category,@Prereq,@Fall,@Spring,@Summer,@Offered)
 update Class 
 set Class_ID=concat('C',ID_Num)
 where Class_ID='NEW'
 go
+
+
 --Requirement
 create procedure dbo.NewReq
 	@DegID varchar(6),
@@ -44,24 +59,25 @@ set Req_ID=CONCAT('R',ID_Num)
 where Req_ID='NEW'
 end
 go
+
+
 --Student
 create procedure dbo.NewStudent
 	@Email varchar(30),
-	@Password varchar(20)
+	@Password varchar(max)
 as
-if(@Email like '%@stmartin.edu' and @Password is not null)
+if(@Password is not null and (select count(*) from Student where Email=@Email)=0)
 begin
 	insert into Student(Student_ID,Email,Student_Password) values('NEW',@Email,@Password)
+	declare @ID varchar(6)=Concat('U',(select top 1 ID_Num from Student where Student_ID='NEW'))
 	update Student
-	set Student_ID=CONCAT('U',ID_Num)
+	set Student_ID=@ID
 	where Student_ID='NEW'
-end
-else
-begin
-	print 'Email is not from St. Martins or the password is null'
-	return
+	exec dbo.GenerateSemesters @ID
 end
 go
+
+
 --Semester
 create procedure dbo.NewSem
 	@StudentID varchar(6),
@@ -78,15 +94,21 @@ update dbo.Semester
 set Semester_ID=CONCAT('S',ID_Num)
 where Semester_ID='NEW'
 go
+
+
 --Listed Class
 create procedure dbo.NewList
 	@SemesterID varchar(6),
 	@ClassID varchar(6)
 as
-if((select count(*) from ListedClass as L 
-	inner join Semester as S on L.Semester_ID=S.Semester_ID 
-	inner join Student as U on S.Student_ID=U.Student_ID 
-	where Class_ID=@ClassID and U.Student_ID=(select Student_ID from Semester where Semester_ID=@SemesterID))=0)
+	--Get the student
+declare @StuID varchar(6)=(select top(1) Student_ID from Semester where Semester_ID=@SemesterID)
+	--Check if there's a completed record for student and class, as a complete is made when listing
+if((select count(*) from CompletedClass where Student_ID=@StuID and Class_ID=@ClassID)=0)
+--if((select count(*) from ListedClass as L 
+--	inner join Semester as S on L.Semester_ID=S.Semester_ID 
+--	--inner join Student as U on S.Student_ID=U.Student_ID 
+--	where Class_ID=@ClassID and S.Student_ID=(select Student_ID from Semester where Semester_ID=@SemesterID))=0)
 begin
 insert into dbo.ListedClass(List_ID,Semester_ID,Class_ID) values('NEW',@SemesterID,@ClassID)
 update dbo.ListedClass
@@ -94,6 +116,8 @@ set List_ID=CONCAT('L',ID_Num)
 where List_ID='NEW'
 end
 go
+
+
 --Completed Class
 create procedure dbo.NewComp
 	@StudentID varchar(6),
@@ -108,7 +132,11 @@ where Complete_ID='NEW'
 end
 go
 
---2
+
+
+	--2.Create
+
+
 --Creating Items
 --Auto-generate semesters for Student based on Grad Year
 create procedure dbo.GenerateSemesters
@@ -137,6 +165,8 @@ begin
 	set @YearChar=CAST(@YearInt as char)
 end
 go
+
+
 --List a class in a semester
 create procedure dbo.ListClass
 	@SemID varchar(6),
@@ -151,7 +181,11 @@ begin
 end
 go
 
---3
+
+
+	--3.Edit
+
+
 --Editing Items
 --Changing a class' fields
 create procedure dbo.ChangeClass
@@ -159,6 +193,7 @@ create procedure dbo.ChangeClass
 	@Code varchar(6) =null,
 	@Name varchar(50) =null,
 	@Category varchar(4)=null,
+	@Prereq varchar(30)=null,
 	@Fall bit=null,
 	@Spring bit=null,
 	@Summer bit=null,
@@ -173,12 +208,15 @@ update Class
 set Course_Code=ISNULL(@Code,Course_Code),
 	Class_Name=ISNULL(@Name,Class_Name),
 	Category=ISNULL(@Category,Category),
+	Prerequisites=@Prereq,
 	InFall=ISNULL(@Fall,InFall),
 	InSpring=ISNULL(@Spring,InSpring),
 	InSummer=ISNULL(@Summer,InSummer),
 	IsOffered=ISNULL(@Offered,IsOffered)
 where Class_ID=@ID
 go
+
+
 --Changing a Degree's fields
 create procedure dbo.ChangeDegree
 	@ID varchar(6) =null,
@@ -187,7 +225,7 @@ create procedure dbo.ChangeDegree
 as
 if @ID=null
 begin
-	print 'An ID is necessary'
+	--print 'An ID is necessary'
 	return
 end
 update Degree 
@@ -195,6 +233,23 @@ set Degree_Name=ISNULL(@Name,Degree_Name),
 	Version_Year=ISNULL(@Year,Version_Year)
 where Degree_ID=@ID
 go
+
+--Changing a Student's degree
+create procedure dbo.ChangeStuDegree
+	@ID varchar(6) =null,
+	@DegreeID varchar(6)=null
+as
+if @ID=null
+begin
+	--print 'An ID is necessary'
+	return
+end
+update Student 
+set Degree_ID=ISNULL(@DegreeID,Degree_ID)
+where Student_ID=@ID
+go
+
+
 --Changing a student's grad year
 create procedure dbo.UpdateGrad
 	@StuID varchar(6),
@@ -202,12 +257,12 @@ create procedure dbo.UpdateGrad
 as
 if(@Year<year(GETDATE()))
 begin
-	print 'Invalid year. Must be after current year'
+	--print 'Invalid year. Must be after current year'
 	return
 end
 else if(@Year=(select top 1 Grad_Year from Student where Student_ID=@StuID))
 begin
-	print 'Year is same as old year'
+	--print 'Year is same as old year'
 	return
 end
 declare @OldYear char(4)=(select top 1 Grad_Year from Student where Student_ID=@StuID)
@@ -225,7 +280,10 @@ end
 go
 
 
---4
+
+	--4.Delete
+
+
 --Deleting Items
 --Remove a requirement by their ID
 create procedure dbo.RemoveReqbyReqID
@@ -234,6 +292,8 @@ as
 delete from dbo.Requirement
 where Req_ID=@ReqID
 go
+
+
 --Remove Requirement by combo of degree and class IDs
 create procedure dbo.RemoveReqbyDegreeIDandClassID
 	@DegID varchar(6),
@@ -242,6 +302,8 @@ as
 delete from dbo.Requirement
 where Degree_ID=@DegID and Class_ID=@ClaID
 go
+
+
 --Delete a degree
 create procedure dbo.DeleteDegree
 	@DegID varchar(6)
@@ -255,6 +317,8 @@ where Degree_ID=@DegID
 	--Now that references aren't an issue, delete degree
 delete from dbo.Degree where Degree_ID=@DegID
 go
+
+
 --Unlist a class from Semester by ListID
 create procedure dbo.UnlistClassByListID
 	@ListID varchar(6)
@@ -272,6 +336,8 @@ delete from dbo.CompletedClass where Student_ID=@StuID and Class_ID=(select Clas
 --Delete the listing
 delete from dbo.ListedClass where List_ID=@ListID
 go
+
+
 --Unlist a Class by Semester and Class IDs
 create procedure dbo.UnlistClassBySemesterIDandClassID
 	@SemID varchar(6),
@@ -287,6 +353,8 @@ delete from dbo.CompletedClass where Student_ID=@StuID and Class_ID=@ClaID
 	--Delete the listing
 delete from dbo.ListedClass where Semester_ID=@SemID and Class_ID=@ClaID
 go
+
+
 --Remove completed class by CompID
 create procedure dbo.IncompleteClassByCompID
 	@CompID varchar(6)
@@ -309,6 +377,8 @@ delete from dbo.ListedClass where List_ID=(
 	where Student_ID=@StuID and s.Semester_ID=c.Semester_ID))
 delete from dbo.CompletedClass where Complete_ID=@CompID
 go
+
+
 --Remove completed class by Student and Class IDs
 create procedure dbo.IncompleteClassByStudentIDandClassID
 	@StuID varchar(6),
@@ -324,6 +394,8 @@ delete from dbo.ListedClass where List_ID=(
 	where Student_ID=@StuID and s.Semester_ID=c.Semester_ID))
 delete from dbo.CompletedClass where Student_ID=@StuID and Class_ID=@ClaID
 go
+
+
 --Delete a semester
 create procedure DeleteSem
 	@SemID varchar(6)
@@ -344,6 +416,8 @@ begin
 	delete from dbo.Semester where Semester_ID=@SemID
 end
 go
+
+
 --Prune semesters by GradYear
 create procedure dbo.PruneSemesters
 	@Student varchar(6)
@@ -375,6 +449,8 @@ begin
 	set @YearChar=CAST(@YearInt as char)
 end
 go
+
+
 --Remove a class
 create procedure dbo.DeleteClass
 	@ClassID varchar(6)
@@ -386,6 +462,8 @@ delete from dbo.CompletedClass where Class_ID=@ClassID
 	--Can now delete class with no references pointing to it
 delete from dbo.Class where Class_ID=@ClassID
 go
+
+
 --Drop a student
 create procedure dbo.DropStudent
 	@StuID varchar(6)
@@ -400,6 +478,8 @@ end
 	--Remove remaining completed classes
 delete from dbo.CompletedClass where Student_ID=@StuID
 go
+
+
 --Prune students who graduated
 create procedure dbo.PruneGraduatedStudents
 as
@@ -411,13 +491,19 @@ begin
 	while((select count(*) from dbo.Student where Grad_Year<year(getdate()))>0)
 	begin
 		set @StudentID=(select top 1 Student_ID from dbo.Student where Grad_Year<year(getdate()))
-		exec dbo.DropStudent @StudentID
+		if(@StudentID!='ADMIN')
+		begin
+			exec dbo.DropStudent @StudentID
+		end
 	end
 end
 go
 
 
---5
+
+	--5.View
+
+
 --Viewing Database
 --Function for readability of seasons
 create function dbo.SeasonOffered(@ClaID varchar(6),@Season varchar(6))
@@ -440,13 +526,58 @@ begin
 	return(@Value)
 end
 go
+
+
+--Make a uniform string for calculation of adding class
+create function dbo.AvailabilityString(@ClaID varchar(6))
+returns char(3)
+as
+begin
+	declare @Spring char(1)='0'
+	if((select InSpring from dbo.Class where Class_ID=@ClaID)!=0)
+	begin
+		set @Spring='1'
+	end
+	declare @Summer char(1)='0'
+	if((select InSummer from dbo.Class where Class_ID=@ClaID)!=0)
+	begin
+		set @Summer='1'
+	end
+	declare @Fall char(1)='0'
+	if((select InFall from dbo.Class where Class_ID=@ClaID)!=0)
+	begin
+		set @Fall='1'
+	end
+	declare @Value char(3)=concat(@Spring,@Summer,@Fall)
+	return(@Value)
+end
+go
+
+
+--Turn null prerequisite values into N/A
+create function dbo.NullPrereq(@Prereq varchar(30))
+returns varchar(30)
+as
+begin
+	declare @check varchar(30)=@Prereq
+	if(@check is null)
+	begin
+		set @check='N/A'
+	end
+	return(@check)
+end
+go
+
+
 --View for displaying classes
 create view dbo.ListableClasses
 as
-select Category,Course_Code, Class_Name, dbo.SeasonOffered(Class_ID,'Spring') as [Spring],dbo.SeasonOffered(Class_ID,'Summer') as [Summer],dbo.SeasonOffered(Class_ID,'Fall') as [Fall] 
+select Class_ID,Category,Course_Code, Class_Name, dbo.NullPrereq(Prerequisites) as [Prerequisites],dbo.SeasonOffered(Class_ID,'Spring') as [Spring],dbo.SeasonOffered(Class_ID,'Summer') as [Summer],dbo.SeasonOffered(Class_ID,'Fall') as [Fall],dbo.AvailabilityString(Class_ID) as [Available] 
 from dbo.Class 
 where IsOffered!=0
 go
+
+
 --Determine if class is completed or not
 create function dbo.IsComplete(@StuID varchar(6),@ClaID varchar(6))
 returns char(1)
@@ -460,26 +591,115 @@ begin
 	return(@Value)
 end
 go
+
+
+--View for seeing the requirements for a degree (used by Admin)
+create view Req_List
+as
+select D.Degree_ID,C.Class_ID,c.Course_Code,C.Class_Name from dbo.Degree as D cross join dbo.Class as C
+go
+
+
+--Fucntion for column calculation above
+create function dbo.IsRequired(@DegID varchar(6),@ClaID varchar(6))
+returns char(1)
+as
+begin
+declare @Message char(1)='N'
+if((select count(*) from dbo.Requirement where Degree_ID=@DegID and Class_ID=@ClaID)!=0)
+	begin
+		set @Message='Y'
+	end
+return @Message
+end
+go
+
+
+--View for seeing which classes are already requirements for a degree
+create view dbo.RequiredForDegree
+as
+select Degree_ID,Class_ID,Course_Code,Class_Name,dbo.IsRequired(Degree_ID,Class_ID) as [RequiredBit] from dbo.Req_List
+go
+
+
 --View for the Requirement Checklist
 create view Req_Checklist
 as
-select s.Student_ID,c.Category,c.Course_Code,(dbo.IsComplete(s.Student_ID,r.Class_ID))as [Complete] 
+select concat(d.Degree_Name,' ',d.Version_Year) as [Degree_Name],s.Student_ID,c.Category,c.Course_Code,(dbo.IsComplete(s.Student_ID,r.Class_ID))as [Complete] 
 from dbo.Student as s 
 inner join dbo.Degree as d on s.Degree_ID=d.Degree_ID 
 inner join dbo.Requirement as r on d.Degree_ID=r.Degree_ID 
 inner join dbo.Class as c on r.Class_ID=c.Class_ID
 go
+
+
 --Create procedure to run this view (just in case)
 create procedure dbo.Checklist
 	@Student varchar(6)
 as
 select Course_Code,Complete from Req_Checklist where Student_ID=@Student order by Category,Course_Code
 go
+
+
 --Create a view for the Degree names with their version year for the dropdown
 create view dbo.DegreeList
 as
-select concat(Version_Year,' ',Degree_Name) as [Degree Name] from dbo.Degree
+select Degree_ID,concat(Version_Year,' ',Degree_Name) as [Degree Name] from dbo.Degree
 go
+
+
+--Get the number of semesters for a given user
+create view dbo.SemCount
+as 
+select Student_ID,count(*) as [Semesters] from Semester group by Student_ID
+go
+
+
+
+--A view with the class names for the listed classes
+create view ListedView
+as
+select C.Course_Code, C.Class_Name, dbo.NullPrereq(C.Prerequisites) as [Prerequisites],L.List_ID,L.Semester_ID,L.Class_ID from ListedClass as L inner join Class as C on L.Class_ID=C.Class_ID
+go
+
+
+--Function for status in the checklist
+create function dbo.CalcComp(@StuID varchar(6),@ClaID varchar(6))
+returns varchar(38)
+as
+begin
+declare @Message varchar(38)='Not completed'
+if((select count(*) from dbo.CompletedClass where Student_ID=@StuID and Class_ID=@ClaID)!=0)
+	begin
+		set @Message= 'Completed prior or planned to complete'
+	end
+return @Message
+end
+go
+
+
+--Function for status bit in the checklist
+create function dbo.CalcCompBit(@StuID varchar(6),@ClaID varchar(6))
+returns bit
+as
+begin
+declare @Message bit=0
+if((select count(*) from dbo.CompletedClass where Student_ID=@StuID and Class_ID=@ClaID)!=0)
+	begin
+		set @Message=1
+	end
+return @Message
+end
+go
+
+
+--View for the checklist page
+create view dbo.ClassChecklist
+as
+select s.Student_ID,c.Class_ID,c.Category,c.Course_Code,c.Class_Name,dbo.CalcComp(s.Student_ID,Class_ID) as [Status],dbo.CalcCompBit(s.Student_ID,c.Class_ID) as [StatusBit] from Student as s cross join Class as c
+go
+
+
 --This is more for just checking data, but a procedure to view all tables
 create procedure dbo.ViewAll
 as

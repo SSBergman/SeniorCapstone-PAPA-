@@ -1,17 +1,17 @@
---Create database PAPA_DB1
---go
+Create database PAPA_DB1
+go
 
 use PAPA_DB1
 go
 
 --Drop section to empty all data and reset identities
-drop table dbo.CompletedClass
-drop table dbo.ListedClass
-drop table dbo.Requirement
-drop table dbo.Semester
-drop table dbo.Student
-drop table dbo.Degree
-drop table dbo.Class
+drop table if exists dbo.CompletedClass
+drop table if exists dbo.ListedClass
+drop table if exists dbo.Requirement
+drop table if exists dbo.Semester
+drop table if exists dbo.Student
+drop table if exists dbo.Degree
+drop table if exists dbo.Class
 go
 
 
@@ -30,9 +30,10 @@ go
 create table dbo.Class(
 ID_Num int identity(1,1),
 Class_ID varchar(6) constraint ClassPK Primary Key,
-Course_Code varchar(6) not null,
+Course_Code varchar(7) not null,
 Class_Name varchar(50) not null,
 Category varchar(4) not null,
+Prerequisites varchar(30) null,
 InFall bit default 'FALSE' not null,
 InSpring bit default 'FALSE' not null,
 InSummer bit default 'FALSE' not null,
@@ -61,7 +62,7 @@ ID_Num int identity(1,1),
 Student_ID varchar(6) not null constraint StudentPK Primary Key,
 Degree_ID varchar(6) null constraint StuDegFK foreign key references Degree(Degree_ID),
 Email varchar(30) not null,
-Student_Password varchar(20) not null,
+Student_Password varchar(MAX) not null,
 Grad_Year char(4) null default year(getdate())
 )
 
